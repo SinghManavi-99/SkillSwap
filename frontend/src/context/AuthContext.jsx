@@ -1,29 +1,56 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { connectSocket, disconnectSocket } from '../api/socket'
+import { getAuthData, saveAuthData, clearAuthData } from '../utils/auth.utils'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('ss_user')) || null } catch { return null }
-  })
+  const [auth, setAuth] = useState(() => getAuthData())
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('ss_user', JSON.stringify(user))
-      if (user.token) connectSocket(user.token)
+    if (auth) {
+      // ✅ save to localStorage
+      saveAuthData(auth)
+
+      // ✅ connect socket
+      if (auth.accessToken) {
+        connectSocket(auth.accessToken)
+      }
     } else {
-      localStorage.removeItem('ss_user')
+      clearAuthData()
       disconnectSocket()
     }
-  }, [user])
+  }, [auth])
 
-  const login      = (u)      => setUser(u)
-  const logout     = ()       => setUser(null)
-  const updateUser = (fields) => setUser(p => ({ ...p, ...fields }))
+  // 🔐 LOGIN
+  const login = (data) => {
+    setAuth(data)
+  }
+
+  // 🚪 LOGOUT
+  const logout = () => {
+    setAuth(null)
+  }
+
+  // ✏️ UPDATE USER
+  const updateUser = (fields) => {
+    setAuth(prev => ({
+      ...prev,
+      user: { ...prev.user, ...fields }
+    }))
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user: auth?.user || null,
+        token: auth?.accessToken || null,
+        login,
+        logout,
+        updateUser,
+        isAuthenticated: !!auth
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

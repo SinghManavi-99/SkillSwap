@@ -11,7 +11,7 @@ import RegisterPage from './pages/RegisterPage'
 
 // Core App Pages
 import OnboardingPage from './pages/OnboardingPage'
-import RoleDashboard from './pages/RoleDashboard'
+import RoleDashboard from './pages/roleDashboard'
 import ExplorePage from './pages/ExplorePage'
 import MentorProfilePage from './pages/MentorProfilePage'
 

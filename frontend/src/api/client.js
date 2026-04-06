@@ -1,6 +1,5 @@
 import axios from "axios";
-import { getAuthData, saveAuthData, clearAuthData } from "./auth.utils";
-
+import { getAuthData, saveAuthData, clearAuthData } from "../utils/auth.utils";
 // ── Axios instance ─────────────────────────────────────────────────────
 const api = axios.create({
   baseURL: import.meta.env.VITE_SERVER,
